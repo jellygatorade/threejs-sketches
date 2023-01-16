@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Cylinder UV map</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="p5-canvas-parent"
+      style="
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        z-index: 100;
+        border: 1px solid blue;
+      "
+    ></div>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../../three.js-r148/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="text/javascript" src="../../p5/p5.min.js"></script>
+    <script type="module" src="./p5-sketch.js"></script>
+    <script type="module" src="./threejs-sketch.js"></script>
+  </body>
+</html>
