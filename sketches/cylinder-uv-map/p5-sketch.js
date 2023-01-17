@@ -22,30 +22,39 @@ const instantiate0 = (p) => {
   let grid;
   let cols;
   let row = 0;
-  let resolution = 10;
+  let resolution = 20;
 
   const canvasParent = document.getElementById("p5-canvas-parent");
 
   p.setup = function () {
-    canvas = p.createCanvas(400, 400);
+    //canvas = p.createCanvas(400, 400);
     //canvas = p.createCanvas(800, 10);
+    canvas = p.createCanvas(1885, 20);
 
     canvas.parent(canvasParent);
 
     p.noStroke();
+    p.noSmooth();
 
     p.pixelDensity(1);
 
     p.frameRate(5);
 
-    cols = 64; // must result in integer
+    cols = 94; // must result in integer
+
+    // currently using a proportion system of
+    // circle of radius 15 has circumference of ~94.25
+    // it would be best to find a radius that gives a whole number circumference
+    // then the #of game of life columns (cells) can be that whole number
+    // and the p5 measures can be gotten proportions from there
+    // // right now I am using 20px cell size, white square positioned with 1px border (see p.rect below)
 
     grid = new Array(cols);
     for (let i = 0; i < cols; i++) {
       grid[i] = p.floor(p.random(2)); // initialize cells with random on/off value
     }
 
-    console.log(grid);
+    console.log(grid); // initial grid
 
     threeJSscene(canvas.canvas);
   };
@@ -53,7 +62,7 @@ const instantiate0 = (p) => {
   p.draw = function () {
     //p.background(0); // black background
 
-    row += 10;
+    row += 20;
     if (row >= p.height) {
       row = 0;
       p.clear();
@@ -63,8 +72,9 @@ const instantiate0 = (p) => {
       let x = i * resolution;
       if (grid[i] == 1) {
         p.fill(255);
-        p.stroke(0);
-        p.rect(x, row, resolution - 1, resolution - 1);
+        //p.stroke(0);
+        //p.rect(x + 1, row + 1, resolution - 2, resolution - 2); // locationx, locationy, width, height
+        p.rect(x + 1, row + 1, resolution - 2, resolution - 2); // locationx, locationy, width, height
       }
     }
 
@@ -85,7 +95,7 @@ const instantiate0 = (p) => {
   };
 
   p.windowResized = function () {
-    p.resizeCanvas(canvasParent.clientWidth, canvasParent.clientHeight);
+    //p.resizeCanvas(canvasParent.clientWidth, canvasParent.clientHeight);
   };
 };
 

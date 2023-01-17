@@ -18,7 +18,7 @@ function threeJSscene(p5canvas) {
   const controls = new OrbitControls(camera, renderer.domElement);
 
   // geometry
-  // CylinderGeometry params - (radiusTop : Float, radiusBottom : Float, height : Float, radialSegments : Integer, heightSegments : Integer, openEnded : Boolean, thetaStart : Float, thetaLength : Float)
+  //CylinderGeometry params - (radiusTop : Float, radiusBottom : Float, height : Float, radialSegments : Integer, heightSegments : Integer, openEnded : Boolean, thetaStart : Float, thetaLength : Float)
   const geometry = new THREE.CylinderGeometry(15, 15, 1, 64, 1);
   // const geometry = new THREE.CylinderGeometry(
   //   15,
