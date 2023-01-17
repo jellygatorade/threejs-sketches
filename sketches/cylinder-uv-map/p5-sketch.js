@@ -29,7 +29,7 @@ const instantiate0 = (p) => {
   p.setup = function () {
     //canvas = p.createCanvas(400, 400);
     //canvas = p.createCanvas(800, 10);
-    canvas = p.createCanvas(1885, 20);
+    canvas = p.createCanvas(3000, 20);
 
     canvas.parent(canvasParent);
 
@@ -38,16 +38,20 @@ const instantiate0 = (p) => {
 
     p.pixelDensity(1);
 
-    p.frameRate(5);
+    p.frameRate(15);
 
-    cols = 94; // must result in integer
+    cols = 150; // must result in integer
 
     // currently using a proportion system of
-    // circle of radius 15 has circumference of ~94.25
+    // circle of radius 15 has circumference of ~94.25 - so I am short .25 units around the edge (also I think there are not enough units to make the pattern visible)
     // it would be best to find a radius that gives a whole number circumference
     // then the #of game of life columns (cells) can be that whole number
     // and the p5 measures can be gotten proportions from there
     // // right now I am using 20px cell size, white square positioned with 1px border (see p.rect below)
+
+    // radius = 15.5972 gives circumference ~98.0001
+    // radius = 23.87324 gives circumference ~149.99999
+    // p5 sketch size needs to be 20 height * total columns, if we do one column per circumference unit, that is 20*150 = 3000
 
     grid = new Array(cols);
     for (let i = 0; i < cols; i++) {

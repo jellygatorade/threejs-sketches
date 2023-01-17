@@ -18,38 +18,64 @@ function threeJSscene(p5canvas) {
   const controls = new OrbitControls(camera, renderer.domElement);
 
   // geometry
-  //CylinderGeometry params - (radiusTop : Float, radiusBottom : Float, height : Float, radialSegments : Integer, heightSegments : Integer, openEnded : Boolean, thetaStart : Float, thetaLength : Float)
-  const geometry = new THREE.CylinderGeometry(15, 15, 1, 64, 1);
-  // const geometry = new THREE.CylinderGeometry(
-  //   15,
-  //   15,
-  //   1,
-  //   64,
-  //   1,
-  //   true,
-  //   0,
-  //   2 * Math.PI
-  // );
+
+  // //CylinderGeometry params - (radiusTop : Float, radiusBottom : Float, height : Float, radialSegments : Integer, heightSegments : Integer, openEnded : Boolean, thetaStart : Float, thetaLength : Float)
+  // const geometry = new THREE.CylinderGeometry(15, 15, 1, 64, 1);
+  // // const geometry = new THREE.CylinderGeometry(
+  // //   15,
+  // //   15,
+  // //   1,
+  // //   64,
+  // //   1,
+  // //   true,
+  // //   0,
+  // //   2 * Math.PI
+  // // );
 
   // CANVAS TEXTURE
-  // Needs to wait for p5 to initialize
-
+  // Needs to be passed the p5canvas param
   const canvasTexture = new THREE.CanvasTexture(p5canvas);
-  const material = new THREE.MeshBasicMaterial({
+  const canvasMaterial = new THREE.MeshBasicMaterial({
     map: canvasTexture,
   });
 
   // UV Grid Texture
-  // const loader = new THREE.TextureLoader();
-  // const material = new THREE.MeshBasicMaterial({
-  //   map: loader.load(
-  //     "../../three.js-r148/examples/textures/uv_grid_opengl.jpg"
-  //   ),
-  // });
+  const loader = new THREE.TextureLoader();
+  const uvGridMaterial = new THREE.MeshBasicMaterial({
+    map: loader.load(
+      "../../three.js-r148/examples/textures/uv_grid_opengl.jpg"
+    ),
+  });
 
-  const cylinder = new THREE.Mesh(geometry, material);
+  const materials = [canvasMaterial, uvGridMaterial, uvGridMaterial];
 
-  scene.add(cylinder);
+  // create cylinders
+  const initialpositionY = 0;
+  const initialScale = 1;
+  const totalCylinders = 96;
+  const scaleBy = 0.95;
+  const offsetBy = 1.01;
+
+  let positionY = initialpositionY;
+  let scale = initialScale;
+
+  const cylinders = new THREE.Group();
+
+  for (let i = 0; i < totalCylinders; i++) {
+    const geometry = new THREE.CylinderGeometry(23.87324, 23.87324, 1, 64, 1);
+    //const geometry = new THREE.CylinderGeometry(15, 15, 1, 64, 1);
+    //const geometry = new THREE.CylinderGeometry(15, 15, 1, 64, 1, true, 0, 2*Math.PI);
+    const cylinder = new THREE.Mesh(geometry, materials);
+    cylinder.position.y = positionY;
+    cylinder.scale.set(scale, scale, scale);
+
+    cylinders.add(cylinder);
+
+    scale *= scaleBy;
+    positionY += offsetBy;
+  }
+
+  scene.add(cylinders);
 
   camera.position.z = 36;
 
