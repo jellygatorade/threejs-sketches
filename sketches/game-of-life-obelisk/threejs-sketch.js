@@ -57,6 +57,8 @@ function threeJSscene(p5data) {
   const canvasTextures = [];
 
   for (let i = 0; i < p5data.canvases.length; i++) {
+    //CylinderGeometry params - (radiusTop : Float, radiusBottom : Float, height : Float, radialSegments : Integer, heightSegments : Integer, openEnded : Boolean, thetaStart : Float, thetaLength : Float)
+    // note radii offset, the sketch is based off of a radius of 23.87324 (* 2 * pi = ~149.99999)
     const geometry = new THREE.CylinderGeometry(23.87324, 24.87324, 1, 64, 1);
     //const geometry = new THREE.CylinderGeometry(15, 15, 1, 64, 1);
     //const geometry = new THREE.CylinderGeometry(15, 15, 1, 64, 1, true, 0, 2*Math.PI);
@@ -83,6 +85,8 @@ function threeJSscene(p5data) {
     scale *= scaleBy;
     positionY += offsetBy;
   }
+
+  console.log(cylinders);
 
   scene.add(cylinders);
 
