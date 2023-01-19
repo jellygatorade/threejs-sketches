@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Glow shader example</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <p
+      >For a glow effect, try: c=0.05, p=4.5, THREE.FrontSide (sphere) or c=0.2,
+      p=1.4, THREE.FrontSide (cube) For a halo effect, try: c=0.6, p=6,
+      THREE.BackSide For a shell effect, try: c=1, p=2, THREE.FrontSide (effects
+      work best on spheres) This three.js demo is part of a collection at
+      http://stemkoski.github.io/Three.js/</p
+    >
+    <p
+      >Original sketch uses a subdivision modifier for the cube (crate) which
+      was not available but could be added back! See sketch.js line 144 -></p
+    >
+    <p>
+      <span style="font-family: monospace"
+        >var smoothCubeGeom = cubeGeom.clone(); // var modifier = new
+        THREE.SubdivisionModifier(2); // modifier.modify(smoothCubeGeom);</span
+      >
+    </p>
+    <div id="webgl-container"></div>
+    <!-- Vertex Shader -->
+    <script id="vertexShader" type="x-shader/x-vertex">
+      uniform vec3 viewVector;
+      uniform float c;
+      uniform float p;
+      varying float intensity;
+      void main()
+      {
+          vec3 vNormal = normalize( normalMatrix * normal );
+        vec3 vNormel = normalize( normalMatrix * viewVector );
+        intensity = pow( c - dot(vNormal, vNormel), p );
+
+          gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+      }
+    </script>
+
+    <!-- Fragment Shader a.k.a. pixel shader -->
+    <script id="fragmentShader" type="x-shader/x-vertex">
+      uniform vec3 glowColor;
+      varying float intensity;
+      void main()
+      {
+        vec3 glow = glowColor * intensity;
+          gl_FragColor = vec4( glow, 1.0 );
+      }
+    </script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../../three.js-r148/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module" src="./sketch.js"></script>
+  </body>
+</html>

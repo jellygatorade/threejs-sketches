@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Glow shader example</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="webgl-container"></div>
+    <script id="vertexShaderSun" type="x-shader/x-vertex">
+      uniform vec3 viewVector;
+      varying float intensity;
+      void main() {
+          gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4( position, 1.0 );
+          vec3 actual_normal = vec3(modelMatrix * vec4(normal, 0.0));
+          intensity = pow( dot(normalize(viewVector), actual_normal), 6.0 );
+      }
+    </script>
+
+    <script id="fragmentShaderSun" type="x-shader/x-vertex">
+      varying float intensity;
+      void main() {
+        vec3 glow = vec3(0, 1, 0) * intensity;
+          gl_FragColor = vec4( glow, 1.0 );
+      }
+    </script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../../three.js-r148/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module" src="./sketch.js"></script>
+  </body>
+</html>
