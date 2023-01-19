@@ -50,19 +50,19 @@ const gol = {
 
       // Rule 90 - https://en.wikipedia.org/wiki/Rule_90
       // left_cell XOR right_cell
-      //next[i] = XOR(left === 1, right === 1) ? 1 : 0;
+      //this.next[i] = XOR(left === 1, right === 1) ? 1 : 0;
 
       // Rule 110
 
       // // Rule 184
       // if (self === 1 && right === 0) {
-      //   next[i] = 0;
+      //   this.next[i] = 0;
       // } else if (self === 1 && right === 1) {
-      //   next[i] = 1;
+      //   this.next[i] = 1;
       // } else if (self === 0 && left === 0) {
-      //   next[i] = 0;
+      //   this.next[i] = 0;
       // } else if (self === 0 && left === 1) {
-      //   next[i] = 1;
+      //   this.next[i] = 1;
       // } else {
       //   console.log("other case");
       // }
