@@ -9,6 +9,9 @@ import { OrbitControls } from "../../three.js-r148/examples/jsm/controls/OrbitCo
 import Stats from "../../three.js-r148/examples/jsm/libs/stats.module.js";
 import { GUI } from "../../three.js-r148/examples/jsm/libs/lil-gui.module.min.js";
 
+//https://github.com/stevinz/three-subdivide
+import { LoopSubdivision } from "../../three-subdivide/LoopSubdivision.js";
+
 // MAIN
 
 // standard global variables
@@ -140,7 +143,8 @@ function init() {
   crate.position.set(-150, 0, -150);
   scene.add(crate);
 
-  var smoothCubeGeom = cubeGeom.clone();
+  //var smoothCubeGeom = cubeGeom.clone();
+  var smoothCubeGeom = LoopSubdivision.modify(cubeGeom, 3); // https://github.com/stevinz/three-subdivide
   // var modifier = new THREE.SubdivisionModifier(2);
   // modifier.modify(smoothCubeGeom);
 
