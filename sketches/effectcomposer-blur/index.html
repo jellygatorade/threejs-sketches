@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Render to buffer</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <script type="importmap">
+      {
+        "imports": {
+          "three": "../../three.js-r148/build/three.module.js"
+        }
+      }
+    </script> -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../../three npm/node_modules/three/build/three.module.js",
+          "three/addons/": "../../three npm/node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="./sketch.js"></script>
+  </body>
+</html>
