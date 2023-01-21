@@ -54,27 +54,18 @@ const gol = {
       if (rule === "Rule 30") {
         // Rule 30 - https://en.wikipedia.org/wiki/Rule_30
         // left_cell XOR (central_cell OR right_cell)
-        this.next[i] = XOR(left === 1, self === 1 || right === 1) ? 1 : 0;
+        this.next[i] = XOR(left, self || right) ? 1 : 0;
       } else if (rule === "Rule 90") {
         // Rule 90 - https://en.wikipedia.org/wiki/Rule_90
         // left_cell XOR right_cell
-        this.next[i] = XOR(left === 1, right === 1) ? 1 : 0;
+        this.next[i] = XOR(left, right) ? 1 : 0;
+      } else if (rule === "Rule 110") {
+        // Rule 110 - https://www.wolframalpha.com/input?i=rule+110
+        this.next[i] = (self && !left) || XOR(self, right) ? 1 : 0;
       } else if (rule === "Rule 184") {
-        // Rule 184
-        if (self === 1 && right === 0) {
-          this.next[i] = 0;
-        } else if (self === 1 && right === 1) {
-          this.next[i] = 1;
-        } else if (self === 0 && left === 0) {
-          this.next[i] = 0;
-        } else if (self === 0 && left === 1) {
-          this.next[i] = 1;
-        } else {
-          console.log("other case");
-        }
+        // Rule 184 - https://www.wolframalpha.com/input?i=rule+184
+        this.next[i] = XOR(left, self && XOR(left, right)) ? 1 : 0;
       }
-
-      // add Rule 110
     }
 
     //console.log(this.next);

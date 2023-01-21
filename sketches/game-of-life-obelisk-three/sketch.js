@@ -1,11 +1,18 @@
 import * as THREE from "three";
 
-import { OrbitControls } from "../../three.js-r148/examples/jsm/controls/OrbitControls.js";
-import { GUI } from "../../three.js-r148/examples/jsm/libs/lil-gui.module.min.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+import { GUI } from "three/addons/libs/lil-gui.module.min.js";
+
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 
 import { gol } from "./game-of-life-1d.js";
 
 // sketch config variables
+
+let glowGUI;
 
 const golCellCount = 150;
 const intialGOL = gol.init(golCellCount);
@@ -19,6 +26,9 @@ const initialRule = "Rule 90";
 let rule = initialRule;
 
 const initialEnvMap = "Day";
+
+const initialGlow = false;
+let glow = initialGlow;
 
 // basic scene
 
@@ -134,6 +144,7 @@ const switchEnvironments = (value) => {
       scene.background = null;
       materials = materialsBasic;
       wireframeMaterial.color = basicLineColor;
+      glowGUI.setValue(false);
       break;
   }
 };
@@ -300,6 +311,7 @@ const parameters = {
   wireframes: initialWireframes,
   rule: initialRule,
   environmentMap: initialEnvMap,
+  glow: glow,
 };
 
 const speedGUI = gui
@@ -317,7 +329,7 @@ speedGUI.onChange(function (value) {
     [speeds.threeClockMin, speeds.threeClockMax]
   );
 
-  console.log(newSpeed);
+  //console.log(newSpeed);
 
   if (newSpeed >= speeds.threeClockMin) {
     speed = 1; // set to overly slow at minimum position
@@ -327,7 +339,7 @@ speedGUI.onChange(function (value) {
 });
 
 const ruleGUI = gui
-  .add(parameters, "rule", ["Rule 30", "Rule 90", "Rule 184"])
+  .add(parameters, "rule", ["Rule 30", "Rule 90", "Rule 110", "Rule 184"])
   .name("Rule");
 
 ruleGUI.onChange(function (value) {
@@ -342,13 +354,8 @@ envmapGUI.onChange(function (value) {
   switchEnvironments(value);
 });
 
-const wireframesGUI = gui
-  .add(parameters, "wireframes")
-  .min(0.0)
-  .max(0.1)
-  .step(0.01)
-  .name("Wireframes")
-  .listen();
+const wireframesGUI = gui.add(parameters, "wireframes").name("Wireframes");
+
 wireframesGUI.onChange(function (value) {
   if (value) {
     scene.add(edges);
@@ -356,6 +363,62 @@ wireframesGUI.onChange(function (value) {
     scene.remove(edges);
   }
 });
+
+glowGUI = gui.add(parameters, "glow").name("Glow");
+
+glowGUI.onChange(function (value) {
+  glow = value;
+});
+
+// keyboard shortcuts for cellular automata rules
+
+window.addEventListener("keydown", (event) => {
+  switch (event.key) {
+    case "1":
+      ruleGUI.setValue("Rule 30");
+      break;
+    case "2":
+      ruleGUI.setValue("Rule 90");
+      break;
+    case "3":
+      ruleGUI.setValue("Rule 110");
+      break;
+    case "4":
+      ruleGUI.setValue("Rule 184");
+      break;
+    default:
+      return;
+  }
+});
+
+// effect composer - glow
+
+const composer = new EffectComposer(renderer);
+
+const delta = 0.01; // required for EffectComposer ?
+
+const renderScene = new RenderPass(scene, camera);
+composer.addPass(renderScene);
+
+const outlinePass = new OutlinePass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  scene,
+  camera
+);
+
+// Assessment color values
+// #60634f
+// #474a38"
+// #232418
+outlinePass.visibleEdgeColor.set("#474a38");
+outlinePass.hiddenEdgeColor.set("#000000");
+outlinePass.edgeStrength = 2.5;
+outlinePass.edgeGlow = 0.0;
+outlinePass.edgeThickness = 5.0;
+outlinePass.selectedObjects = [cylinders];
+
+composer.addPass(outlinePass);
+//
 
 // resize
 
@@ -370,6 +433,8 @@ function onWindowResize() {
 
   renderer.setSize(width, height);
 }
+
+// animation
 
 const clock = new THREE.Clock();
 
@@ -399,7 +464,11 @@ function animate() {
     clock.start();
   }
 
-  renderer.render(scene, camera);
+  if (glow) {
+    composer.render();
+  } else {
+    renderer.render(scene, camera);
+  }
 }
 
 animate();
