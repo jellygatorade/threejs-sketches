@@ -1,17 +1,30 @@
 import * as THREE from "three";
-import { Vector3 } from "three";
+
 import { OrbitControls } from "../../three.js-r148/examples/jsm/controls/OrbitControls.js";
+import { GUI } from "../../three.js-r148/examples/jsm/libs/lil-gui.module.min.js";
 
 import { gol } from "./game-of-life-1d.js";
+
+// sketch config variables
 
 const golCellCount = 150;
 const intialGOL = gol.init(golCellCount);
 const golUniversesCount = 64;
-const speed = 0.05; // figure out units for THREE.Clock
+
+let speed = 0.01; // in units for THREE.Clock
+
+const initialWireframes = false;
+
+const initialRule = "Rule 90";
+let rule = initialRule;
+
+const initialEnvMap = "Day";
+
+// basic scene
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
-  75,
+  50, // fov
   window.innerWidth / window.innerHeight,
   0.1,
   1000
@@ -21,36 +34,127 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-const controls = new OrbitControls(camera, renderer.domElement);
+// env map
+
+const textureLoader = new THREE.TextureLoader();
+
+// const textureEquirec = textureLoader.load(
+//   "../../three.js-r148/examples/textures/2294472375_24a3b8ef46_o.jpg"
+// );
+
+const textureEquirecDay = textureLoader.load("./envmaps/evening_meadow_2k.jpg");
+textureEquirecDay.mapping = THREE.EquirectangularReflectionMapping;
+textureEquirecDay.encoding = THREE.sRGBEncoding;
+
+const textureEquirecNight = textureLoader.load(
+  "./envmaps/dikhololo_night_2k.jpg"
+);
+textureEquirecNight.mapping = THREE.EquirectangularReflectionMapping;
+textureEquirecNight.encoding = THREE.sRGBEncoding;
 
 // materials
-const materials = [
-  // new THREE.MeshBasicMaterial({
-  //   color: 0x000000,
-  // }),
-  // new THREE.MeshBasicMaterial({
-  //   color: 0xffffff,
-  // }),
-  new THREE.MeshStandardMaterial({
-    color: 0xffff00,
-    roughness: 0.15,
+
+const materialsBasic = [
+  new THREE.MeshBasicMaterial({
+    color: 0x0d0d0d,
+    side: THREE.DoubleSide,
   }),
-  new THREE.MeshStandardMaterial({
-    color: 0xff00ff,
-    roughness: 0.15,
+  new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    side: THREE.DoubleSide,
   }),
 ];
 
-// // Alternates materials per the geometry group index
-// const alternateFacesMaterials = geometry.groups.map((face, index) => {
-//   //console.log(index);
-//   // If index is even or odd
-//   if (index % 2 == 0) {
-//     return materials[0];
-//   } else {
-//     return materials[1];
-//   }
-// });
+const materialsReflective = [
+  new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.4,
+    roughness: 0.15,
+    metalness: 1,
+    envMap: textureEquirecDay,
+  }),
+  new THREE.MeshStandardMaterial({
+    color: 0xd4cecb, // beige
+    side: THREE.DoubleSide,
+    transparent: false,
+    emissive: 0xd4cecb,
+    emissiveIntensity: 0.4,
+    roughness: 0.09,
+    metalness: 0.5,
+    envMap: textureEquirecDay,
+  }),
+];
+
+const transparentMaterial = new THREE.MeshBasicMaterial({
+  color: 0x000000,
+  transparent: true,
+  opacity: 0.0,
+});
+
+// Edges colors
+const basicLineColor = new THREE.Color(0x022b00);
+const envLineColor = new THREE.Color(0x232418);
+
+const wireframeMaterial = new THREE.LineBasicMaterial({
+  color: envLineColor,
+  linewidth: 1,
+}); // Due to limitations of the OpenGL Core Profile with the WebGL renderer on most platforms linewidth will always be 1 regardless of the set value.
+
+//
+
+let materials = materialsReflective;
+
+const switchMaterialEnvMaps = (envmap) => {
+  scene.background = envmap;
+  materialsReflective.forEach((material) => (material.envMap = envmap));
+  if (envmap === "Day") {
+    materialsReflective[1].emissiveIntensity = 0.4;
+  } else if (envmap === "Dusk") {
+    materialsReflective[1].emissiveIntensity = 0.18;
+  }
+};
+
+const switchEnvironments = (value) => {
+  switch (value) {
+    case "Day":
+      scene.background = textureEquirecDay;
+      materials = materialsReflective;
+      switchMaterialEnvMaps(textureEquirecDay);
+      wireframeMaterial.color = envLineColor;
+      break;
+    case "Dusk":
+      scene.background = textureEquirecNight;
+      materials = materialsReflective;
+      switchMaterialEnvMaps(textureEquirecNight);
+      wireframeMaterial.color = envLineColor;
+      break;
+    case "None":
+      scene.background = null;
+      materials = materialsBasic;
+      wireframeMaterial.color = basicLineColor;
+      break;
+  }
+};
+
+switchEnvironments(initialEnvMap);
+
+//
+
+// Alternates materials per the geometry group index
+const alternateFacesMaterials = (geometry) => {
+  const matArray = geometry.groups.map((face, index) => {
+    //console.log(index);
+    // If index is even or odd
+    if (index % 2 == 0) {
+      return materials[0];
+    } else {
+      return materials[1];
+    }
+  });
+  return matArray;
+};
 
 function mapGOLToMaterials(array) {
   const newMaterialsArr = array.map((item) => {
@@ -61,10 +165,11 @@ function mapGOLToMaterials(array) {
 }
 
 // create cylinders
+
 const initialpositionY = -0.5 * golUniversesCount;
 const initialScale = 1;
 const radius = 25;
-const scaleBy = 0.95;
+const scaleBy = 0.96;
 const offsetBy = 1;
 
 let positionY = initialpositionY;
@@ -74,6 +179,19 @@ const edges = new THREE.Group();
 
 for (let i = 0; i < golUniversesCount; i++) {
   // Using the GOL array to specify how many divisions
+
+  //  CylinderGeometry params
+  //
+  //  {
+  //    radiusTop : Float,
+  //    radiusBottom : Float,
+  //    height : Float,
+  //    radialSegments : Integer,
+  //    heightSegments : Integer,
+  //    openEnded : Boolean,
+  //    thetaStart : Float, thetaLength : Float)
+  //   }
+
   const geometry = new THREE.CylinderGeometry(
     radius * scaleBy,
     radius,
@@ -99,27 +217,34 @@ for (let i = 0; i < golUniversesCount; i++) {
     iterations++;
   }
 
-  const cylinder = new THREE.Mesh(geometry, mapGOLToMaterials(intialGOL));
+  let cylinder;
+  if (i === 0) {
+    cylinder = new THREE.Mesh(geometry, mapGOLToMaterials(intialGOL));
+  } else {
+    cylinder = new THREE.Mesh(geometry, transparentMaterial);
+  }
 
   cylinder.position.y = positionY;
-  //cylinder.scale.set(scale, scale, scale);
-  cylinder.scale.x = scale;
-  cylinder.scale.z = scale;
-
-  cylinders.add(cylinder);
+  cylinder.scale.set(scale, scale, scale);
+  //cylinder.scale.x = scale;
+  //cylinder.scale.z = scale;
 
   // Show edges
   const cylinderEdges = new THREE.EdgesGeometry(cylinder.geometry);
-  const lines = new THREE.LineSegments(
-    cylinderEdges,
-    new THREE.LineBasicMaterial({ color: 0x61ff8e, linewidth: 1 }) // Due to limitations of the OpenGL Core Profile with the WebGL renderer on most platforms linewidth will always be 1 regardless of the set value.
-  );
+  // Edges colors
+  // 0x61ff8e
+  // 0x909e93
+  // 0x718074
+  // 0x434530
+  // 0x232418
+  const lines = new THREE.LineSegments(cylinderEdges, wireframeMaterial);
 
   lines.position.y = positionY;
-  //lines.scale.set(scale, scale, scale);
-  lines.scale.x = scale;
-  lines.scale.z = scale;
+  lines.scale.set(scale, scale, scale);
+  //lines.scale.x = scale;
+  //lines.scale.z = scale;
 
+  cylinders.add(cylinder);
   edges.add(lines);
 
   scale *= scaleBy;
@@ -127,111 +252,112 @@ for (let i = 0; i < golUniversesCount; i++) {
 }
 
 scene.add(cylinders);
-//scene.add(edges);
 
-console.log(cylinders);
-console.log(edges);
-
-// geometry - using the GOL array to specify how many divisions
-const geometry = new THREE.CylinderGeometry(15, 15, 1, intialGOL.length, 1);
-
-// Following
-// https://dustinpfister.github.io/2018/05/14/threejs-mesh-material-index/
-// https://stackoverflow.com/questions/41540313/three-buffergeometry-accessing-face-indices-and-face-normals/41540720#41540720
-// https://stackoverflow.com/questions/68934851/three-js-assign-array-of-materials-to-an-indexed-buffergeometry
-
-// To change material per face in a BufferGeometry
-// Faces must be selected by group
-
-// For BufferGeometries in general (I think)
-// geometry.index.array holds 3x the total amount of triangular faces, because it holds each vertex for each face
-// geometry.index.array.length will 3x the total amount of triangular faces
-
-// For CylinderGeometry specifically
-// geometry.groups default 0th group always contains half of the total number of geometry.index.array.length
-// I want
-// start: 0, count: 3, materialIndex: 0
-// start: 3, count: 3, materialIndex: 1
-// start: 6, count: 3, materialIndex: 0
-// ...until
-// start: 0.5 * geometry.index.array.length ... and from there keep the two default groups representing the ends of the cylinder
-
-const defaultGroups = geometry.groups; // store the default groups that come with CylinderGeometry
-geometry.clearGroups(); // clear the default groups
-
-// The loop below accomplishes something like this...
-// geometry.addGroup(0, 6, 0);
-// geometry.addGroup(6, 6, 1);
-// geometry.addGroup(12, 6, 2);
-// geometry.addGroup(18, 6, 3);
-// ...
-
-let iterations = 0; // used to make each materialIndex unique (0, 1, 2, 3...)
-for (let i = 0; i < 0.5 * geometry.index.array.length; i += 6) {
-  //console.log(i, matIndex);
-  geometry.addGroup(i, 6, iterations);
-  iterations++;
+if (initialWireframes) {
+  scene.add(edges);
 }
 
-// Add the default groups back
-// geometry.addGroup(
-//   defaultGroups[1].start,
-//   defaultGroups[1].count,
-//   defaultGroups[1].materialIndex
-// );
-// geometry.addGroup(
-//   defaultGroups[2].start,
-//   defaultGroups[2].count,
-//   defaultGroups[2].materialIndex
-// );
+// controls and camera positioning
 
-//const object = new THREE.Mesh(geometry, alternateFacesMaterials);
-//const object = new THREE.Mesh(geometry, mapGOLToMaterials(intialGOL));
-//console.log(object);
+const controls = new OrbitControls(camera, renderer.domElement);
 
-//scene.add(object);
+const fullHeight = 0.5 * golUniversesCount * offsetBy;
+const halfHeight = 0;
 
-// // Show edges
-// //const edges = new THREE.WireframeGeometry(geometry);
-// const edges = new THREE.EdgesGeometry(geometry);
-// const line = new THREE.LineSegments(
-//   edges,
-//   new THREE.LineBasicMaterial({ color: 0xffffff })
-// );
-// scene.add(line);
-
-//lights
-// https://github.com/mrdoob/three.js/blob/master/examples/webgl_lights_pointlights.html
-const sphere = new THREE.SphereGeometry(0.5, 16, 8);
-
-const light1 = new THREE.PointLight(0xff0040, 2, 50);
-light1.add(
-  new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ color: 0xff0040 }))
-);
-scene.add(light1);
-
-const light2 = new THREE.PointLight(0x0040ff, 2, 50);
-light2.add(
-  new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ color: 0x0040ff }))
-);
-scene.add(light2);
-
-const light3 = new THREE.PointLight(0x80ff80, 2, 50);
-light3.add(
-  new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ color: 0x80ff80 }))
-);
-scene.add(light3);
-
-const light4 = new THREE.PointLight(0xffaa00, 2, 50);
-light4.add(
-  new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ color: 0xffaa00 }))
-);
-scene.add(light4);
-
-camera.position.y = 0.5 * golUniversesCount;
-camera.position.z = 6;
-controls.target = new THREE.Vector3(0, 5, 0);
+camera.position.x = -10;
+camera.position.y = 2 * fullHeight + 2;
+camera.position.z = 0.65 * fullHeight - 0;
+controls.target = new THREE.Vector3(0, halfHeight - 10, 0);
 controls.update();
+
+//
+
+// gui
+
+const mapRange = (number, [inMin, inMax], [outMin, outMax]) => {
+  // if you need an integer value use Math.floor or Math.ceil here
+  return ((number - inMin) / (inMax - inMin)) * (outMax - outMin) + outMin;
+};
+
+const speeds = {
+  controlsMin: 0,
+  controlsMax: 1,
+  threeClockMin: 0.1,
+  threeClockMax: 0,
+};
+const initialSpeed = mapRange(
+  speed,
+  [speeds.threeClockMin, speeds.threeClockMax],
+  [speeds.controlsMin, speeds.controlsMax]
+);
+
+//
+
+const gui = new GUI();
+
+const parameters = {
+  speed: initialSpeed,
+  wireframes: initialWireframes,
+  rule: initialRule,
+  environmentMap: initialEnvMap,
+};
+
+const speedGUI = gui
+  .add(parameters, "speed")
+  .min(0.0)
+  .max(1.0)
+  .step(0.01)
+  .name("Speed")
+  .listen();
+
+speedGUI.onChange(function (value) {
+  const newSpeed = mapRange(
+    value,
+    [speeds.controlsMin, speeds.controlsMax],
+    [speeds.threeClockMin, speeds.threeClockMax]
+  );
+
+  console.log(newSpeed);
+
+  if (newSpeed >= speeds.threeClockMin) {
+    speed = 1; // set to overly slow at minimum position
+  } else {
+    speed = newSpeed; // heed the actual mapped value
+  }
+});
+
+const ruleGUI = gui
+  .add(parameters, "rule", ["Rule 30", "Rule 90", "Rule 184"])
+  .name("Rule");
+
+ruleGUI.onChange(function (value) {
+  rule = value;
+});
+
+const envmapGUI = gui
+  .add(parameters, "environmentMap", ["Day", "Dusk", "None"])
+  .name("Enviroment");
+
+envmapGUI.onChange(function (value) {
+  switchEnvironments(value);
+});
+
+const wireframesGUI = gui
+  .add(parameters, "wireframes")
+  .min(0.0)
+  .max(0.1)
+  .step(0.01)
+  .name("Wireframes")
+  .listen();
+wireframesGUI.onChange(function (value) {
+  if (value) {
+    scene.add(edges);
+  } else {
+    scene.remove(edges);
+  }
+});
+
+// resize
 
 window.addEventListener("resize", onWindowResize);
 
@@ -254,7 +380,7 @@ function animate() {
 
   // Control animation update with clock
   if (clock.getElapsedTime() > speed) {
-    let nextIteration = gol.iterate();
+    let nextIteration = gol.iterate(rule);
 
     // Keep an array of the last config.keepFrames amount of ImageData
     bufferedFrames.unshift(nextIteration);
@@ -272,24 +398,6 @@ function animate() {
     clock.stop();
     clock.start();
   }
-
-  const time = Date.now() * 0.0005;
-
-  light1.position.x = Math.sin(time * 0.7) * 30;
-  light1.position.y = Math.cos(time * 0.5) * 40;
-  light1.position.z = Math.cos(time * 0.3) * 30;
-
-  light2.position.x = Math.cos(time * 0.3) * 30;
-  light2.position.y = Math.sin(time * 0.5) * 40;
-  light2.position.z = Math.sin(time * 0.7) * 30;
-
-  light3.position.x = Math.sin(time * 0.7) * 30;
-  light3.position.y = Math.cos(time * 0.3) * 40;
-  light3.position.z = Math.sin(time * 0.5) * 30;
-
-  light4.position.x = Math.sin(time * 0.3) * 30;
-  light4.position.y = Math.cos(time * 0.7) * 40;
-  light4.position.z = Math.sin(time * 0.5) * 30;
 
   renderer.render(scene, camera);
 }

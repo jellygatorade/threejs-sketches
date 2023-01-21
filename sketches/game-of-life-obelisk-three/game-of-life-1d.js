@@ -28,14 +28,21 @@ const gol = {
     this.current = new Array(this.cellCount);
 
     for (let i = 0; i < this.cellCount; i++) {
-      this.current[i] = Math.floor(getRandomInt(2)); // initialize cells with random on/off value
+      //this.current[i] = Math.floor(getRandomInt(2)); // initialize cells with random on/off value
+
+      // initialize cells switched on only at initial position
+      if (i === 0) {
+        this.current[i] = 1;
+      } else {
+        this.current[i] = 0;
+      }
     }
 
     //console.log(this.current); // initial grid
     return this.current; // initial grid
   },
 
-  iterate: function () {
+  iterate: function (rule) {
     this.next = new Array(this.cellCount);
 
     // Compute next based on this.current
@@ -44,28 +51,30 @@ const gol = {
       let self = this.current[i];
       let right = circularArrayAccess(i, this.current, "right");
 
-      // Rule 30 - https://en.wikipedia.org/wiki/Rule_30
-      // left_cell XOR (central_cell OR right_cell)
-      this.next[i] = XOR(left === 1, self === 1 || right === 1) ? 1 : 0;
+      if (rule === "Rule 30") {
+        // Rule 30 - https://en.wikipedia.org/wiki/Rule_30
+        // left_cell XOR (central_cell OR right_cell)
+        this.next[i] = XOR(left === 1, self === 1 || right === 1) ? 1 : 0;
+      } else if (rule === "Rule 90") {
+        // Rule 90 - https://en.wikipedia.org/wiki/Rule_90
+        // left_cell XOR right_cell
+        this.next[i] = XOR(left === 1, right === 1) ? 1 : 0;
+      } else if (rule === "Rule 184") {
+        // Rule 184
+        if (self === 1 && right === 0) {
+          this.next[i] = 0;
+        } else if (self === 1 && right === 1) {
+          this.next[i] = 1;
+        } else if (self === 0 && left === 0) {
+          this.next[i] = 0;
+        } else if (self === 0 && left === 1) {
+          this.next[i] = 1;
+        } else {
+          console.log("other case");
+        }
+      }
 
-      // Rule 90 - https://en.wikipedia.org/wiki/Rule_90
-      // left_cell XOR right_cell
-      //this.next[i] = XOR(left === 1, right === 1) ? 1 : 0;
-
-      // Rule 110
-
-      // // Rule 184
-      // if (self === 1 && right === 0) {
-      //   this.next[i] = 0;
-      // } else if (self === 1 && right === 1) {
-      //   this.next[i] = 1;
-      // } else if (self === 0 && left === 0) {
-      //   this.next[i] = 0;
-      // } else if (self === 0 && left === 1) {
-      //   this.next[i] = 1;
-      // } else {
-      //   console.log("other case");
-      // }
+      // add Rule 110
     }
 
     //console.log(this.next);
