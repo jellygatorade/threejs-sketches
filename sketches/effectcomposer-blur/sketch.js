@@ -1,6 +1,8 @@
 // todo:
 // try to implement a multiple pass glow effect
 // https://www.youtube.com/watch?v=SMLbbi8oaO8
+// and consider this comment:
+// "It seems like this could be simplified a bit. You could probably render your blurred geometry to a separate buffer as normal. Draw the rest of the scene as normal and then render the glowing objects as a blurred effect on top of that. Then finally render the that buffer again (non-blurred) on top of that a third time. This eliminates a buffer and a shader step. You could probably also use the depth buffer to handle the overglow effects (4:30) -- also if you still wanted the cutouts you could use a stencil buffer on that first glow-object render (but you probably won't be able to get that inner shadow effect)."
 
 // reference for EffectComposer:
 // https://threejs.org/docs/#examples/en/postprocessing/EffectComposer.addPass
