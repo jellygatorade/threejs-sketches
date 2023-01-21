@@ -1,9 +1,14 @@
+// todo:
+// try to implement a multiple pass glow effect
+// https://www.youtube.com/watch?v=SMLbbi8oaO8
+
+// reference for EffectComposer:
 // https://threejs.org/docs/#examples/en/postprocessing/EffectComposer.addPass
 // https://threejs.org/examples/#webgl_postprocessing_advanced
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_advanced.html
 
 import * as THREE from "three";
-import { OrbitControls } from "../../three.js-r148/examples/jsm/controls/OrbitControls.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
@@ -16,11 +21,10 @@ import { SepiaShader } from "three/addons/shaders/SepiaShader.js";
 import { BlurShader } from "./BlurShader-3.js";
 import { Vector2 } from "three";
 
+//
+
 // basic scene setup
 
-var scene = new THREE.Scene();
-var width = window.innerWidth;
-var height = window.innerHeight;
 var camera = new THREE.PerspectiveCamera(
   70,
   window.innerWidth / window.innerHeight,
@@ -30,7 +34,14 @@ var camera = new THREE.PerspectiveCamera(
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x0000ff, 1); // make the renderer backgroundblue
 document.body.appendChild(renderer.domElement);
+
+// For orbit controls the camera position and orbit controls target cannot be the same
+camera.position.z = 10;
+const controls = new OrbitControls(camera, renderer.domElement);
+
+//
 
 // create off-screen render target
 
@@ -44,23 +55,16 @@ var bufferTexture = new THREE.WebGLRenderTarget(
   { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
 );
 
-// red box
+// add red box to bufferScene
 var redMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 var boxGeometry = new THREE.BoxGeometry(5, 5, 5);
 var boxObject = new THREE.Mesh(boxGeometry, redMaterial);
-boxObject.position.z = -10;
+boxObject.position.z = 0;
 bufferScene.add(boxObject); //We add it to the bufferScene instead of the normal scene!
 
-// blue plane (background)
-//var blueMaterial = new THREE.MeshBasicMaterial({ color: 0x7074ff });
-var blueMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-var plane = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
-var planeObject = new THREE.Mesh(plane, blueMaterial);
-planeObject.position.z = -15;
-bufferScene.add(planeObject); //We add it to the bufferScene instead of the normal scene!
+//
 
 // add an EffectComposer
-
 const composer = new EffectComposer(renderer);
 
 const shaderSepia = SepiaShader;
@@ -74,16 +78,35 @@ effectBlur.uniforms["res"].value = new Vector2(
   window.innerHeight
 );
 
-// clock to be used for Emboss shader uniform
-// const clock = new THREE.Clock();
-// clock.start();
-
 const renderScene = new TexturePass(bufferTexture.texture);
 composer.addPass(renderScene);
 //composer.addPass(effectSepia);
 composer.addPass(effectBlur);
 
-const delta = 0.05;
+const delta = 0.05; // required for EffectComposer
+
+//
+
+// window resizing
+
+window.addEventListener("resize", onWindowResize);
+
+function onWindowResize() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+
+  // update the shader uniforms
+  effectBlur.uniforms["res"].value = new Vector2(width, height);
+
+  renderer.setSize(width, height);
+}
+
+//
+
+// render
 
 function render() {
   requestAnimationFrame(render);
@@ -98,5 +121,10 @@ function render() {
 
   // finally draw to the screen
   composer.render(delta);
+
+  // or, render without first passing to bufferTexture -> EffectComposer
+  // renderer.setRenderTarget(null);
+  // renderer.render(bufferScene, camera);
 }
+
 render();
