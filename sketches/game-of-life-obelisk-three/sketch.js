@@ -16,7 +16,7 @@ let glowGUI;
 
 const golCellCount = 150;
 const intialGOL = gol.init(golCellCount);
-const golUniversesCount = 64;
+const golUniversesCount = 72;
 
 let speed = 0.01; // in units for THREE.Clock
 
@@ -66,11 +66,11 @@ textureEquirecNight.encoding = THREE.sRGBEncoding;
 
 const materialsBasic = [
   new THREE.MeshBasicMaterial({
-    color: 0x0d0d0d,
+    color: 0x0f0f0f,
     side: THREE.DoubleSide,
   }),
   new THREE.MeshBasicMaterial({
-    color: 0xffffff,
+    color: 0xf0f0f0,
     side: THREE.DoubleSide,
   }),
 ];
@@ -104,8 +104,8 @@ const transparentMaterial = new THREE.MeshBasicMaterial({
 });
 
 // Edges colors
-const basicLineColor = new THREE.Color(0x022b00);
-const envLineColor = new THREE.Color(0x232418);
+const basicLineColor = new THREE.Color(0x034000);
+const envLineColor = new THREE.Color(0x2f3020);
 
 const wireframeMaterial = new THREE.LineBasicMaterial({
   color: envLineColor,
@@ -141,7 +141,7 @@ const switchEnvironments = (value) => {
       wireframeMaterial.color = envLineColor;
       break;
     case "None":
-      scene.background = null;
+      scene.background = envLineColor;
       materials = materialsBasic;
       wireframeMaterial.color = basicLineColor;
       glowGUI.setValue(false);
@@ -275,15 +275,15 @@ const controls = new OrbitControls(camera, renderer.domElement);
 const fullHeight = 0.5 * golUniversesCount * offsetBy;
 const halfHeight = 0;
 
-camera.position.x = -10;
-camera.position.y = 2 * fullHeight + 2;
-camera.position.z = 0.65 * fullHeight - 0;
+camera.position.x = -4;
+camera.position.y = fullHeight * 1.35;
+camera.position.z = 4;
 controls.target = new THREE.Vector3(0, halfHeight - 10, 0);
 controls.update();
 
 //
 
-// gui
+// gui - speed functions
 
 const mapRange = (number, [inMin, inMax], [outMin, outMax]) => {
   // if you need an integer value use Math.floor or Math.ceil here
@@ -296,23 +296,68 @@ const speeds = {
   threeClockMin: 0.1,
   threeClockMax: 0,
 };
+
 const initialSpeed = mapRange(
   speed,
   [speeds.threeClockMin, speeds.threeClockMax],
   [speeds.controlsMin, speeds.controlsMax]
 );
 
-//
+// gui
 
 const gui = new GUI();
 
 const parameters = {
+  instruction: "",
   speed: initialSpeed,
   wireframes: initialWireframes,
   rule: initialRule,
   environmentMap: initialEnvMap,
   glow: glow,
 };
+
+const instruction1GUI = gui
+  .add(parameters, "instruction")
+  .name("- Click + drag + scroll to reposition view.");
+// dat.gui styles editing for writing the instruction
+document.getElementById(
+  "lil-gui-name-1"
+).parentElement.childNodes[0].style.width = "100%";
+document.getElementById(
+  "lil-gui-name-1"
+).parentElement.childNodes[0].style.whiteSpace = "normal";
+document.getElementById("lil-gui-name-1").parentElement.childNodes[1].remove();
+
+const instruction2GUI = gui
+  .add(parameters, "instruction")
+  .name(
+    "- Numeric keys 1 - 4 to quickly switch between cellular automata rules."
+  );
+// dat.gui styles editing for writing the instruction
+document.getElementById(
+  "lil-gui-name-2"
+).parentElement.childNodes[0].style.width = "100%";
+document.getElementById(
+  "lil-gui-name-2"
+).parentElement.childNodes[0].style.whiteSpace = "normal";
+document.getElementById("lil-gui-name-2").parentElement.childNodes[1].remove();
+
+const instruction3GUI = gui
+  .add(parameters, "instruction")
+  .name(
+    "- For example switching between Rule 90 and Rule 184 yields nice variations."
+  );
+// dat.gui styles editing for writing the instruction
+document.getElementById(
+  "lil-gui-name-3"
+).parentElement.childNodes[0].style.width = "100%";
+document.getElementById(
+  "lil-gui-name-3"
+).parentElement.childNodes[0].style.whiteSpace = "normal";
+document.getElementById(
+  "lil-gui-name-3"
+).parentElement.childNodes[0].style.marginBottom = "0.5rem";
+document.getElementById("lil-gui-name-3").parentElement.childNodes[1].remove();
 
 const speedGUI = gui
   .add(parameters, "speed")
@@ -410,7 +455,7 @@ const outlinePass = new OutlinePass(
 // #60634f
 // #474a38"
 // #232418
-outlinePass.visibleEdgeColor.set("#474a38");
+outlinePass.visibleEdgeColor.set("#60634f");
 outlinePass.hiddenEdgeColor.set("#000000");
 outlinePass.edgeStrength = 2.5;
 outlinePass.edgeGlow = 0.0;
