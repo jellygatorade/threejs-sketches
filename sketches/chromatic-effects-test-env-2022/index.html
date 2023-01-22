@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Matcap Test</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script
+      async
+      src="https://unpkg.com/es-module-shims@0.13.1/dist/es-module-shims.js"
+    ></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../../three npm/node_modules/three/build/three.module.js",
+          "three/addons/": "../../three npm/node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+
+    <!-- ---------------- Custom Shader Code ------------------------ -->
+    <!-- vertex shader -->
+    <script id="vertexShader" type="x-shader/x-vertex">
+      uniform vec3 viewVector;
+      uniform float c;
+      uniform float p;
+      uniform float intensityScalar;
+      varying float intensity;
+      void main()
+      {
+      	vec3 vNormal = normalize( normalMatrix * normal );
+      	vec3 vNormel = normalize( normalMatrix * viewVector );
+        //vec3 vNormel = normalize( normalMatrix * normal );
+      	intensity = pow( c - dot(vNormal, vNormel), p );
+        intensity = intensityScalar * intensity;
+
+      	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+      }
+    </script>
+
+    <!-- fragment shader a.k.a. pixel shader -->
+    <script id="fragmentShader" type="x-shader/x-vertex">
+      uniform vec3 glowColor;
+      varying float intensity;
+      void main()
+      {
+      	vec3 glow = glowColor * intensity;
+      	gl_FragColor = vec4( glow, 1.0 );
+      }
+    </script>
+    <!-- ----------------------------------------------------------- -->
+
+    <script type="module" src="./script.js"></script>
+    </script>
+  </body>
+</html>

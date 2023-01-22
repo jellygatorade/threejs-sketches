@@ -48,16 +48,14 @@ document.body.appendChild(renderer.domElement);
 
 const textureLoader = new THREE.TextureLoader();
 
-// const textureEquirec = textureLoader.load(
-//   "../../three.js-r148/examples/textures/2294472375_24a3b8ef46_o.jpg"
-// );
-
-const textureEquirecDay = textureLoader.load("./envmaps/evening_meadow_2k.jpg");
+const textureEquirecDay = textureLoader.load(
+  "../../assets/envmaps/evening_meadow_2k.jpg"
+);
 textureEquirecDay.mapping = THREE.EquirectangularReflectionMapping;
 textureEquirecDay.encoding = THREE.sRGBEncoding;
 
 const textureEquirecNight = textureLoader.load(
-  "./envmaps/dikhololo_night_2k.jpg"
+  "../../assets/envmaps/dikhololo_night_2k.jpg"
 );
 textureEquirecNight.mapping = THREE.EquirectangularReflectionMapping;
 textureEquirecNight.encoding = THREE.sRGBEncoding;
