@@ -130,18 +130,21 @@ const switchEnvironments = (value) => {
   switch (value) {
     case "Day":
       scene.background = textureEquirecDay;
+      scene.backgroundIntensity = 0.8;
       materials = materialsReflective;
       switchMaterialEnvMaps(textureEquirecDay);
       wireframeMaterial.color = envLineColor;
       break;
     case "Dusk":
       scene.background = textureEquirecNight;
+      scene.backgroundIntensity = 1.0;
       materials = materialsReflective;
       switchMaterialEnvMaps(textureEquirecNight);
       wireframeMaterial.color = envLineColor;
       break;
     case "None":
       scene.background = envLineColor;
+      scene.backgroundIntensity = 1.0;
       materials = materialsBasic;
       wireframeMaterial.color = basicLineColor;
       glowGUI.setValue(false);
