@@ -1,0 +1,200 @@
+<!-- https://jobtalle.com/lindenmayer_systems.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Lindenmayer systems</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Job Talle" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" type="image/gif" href="img/favicon.gif" /><link
+      rel="stylesheet"
+      type="text/css"
+      href="css/style.css"
+    />
+    <link rel="stylesheet" type="text/css" href="css/style_3d.css" />
+  </head>
+
+  <body>
+    <div id="container">
+      <div id="wrapper" class="container">
+        <div id="content">
+          <!-- -->
+
+          <!-- <script src="../../three.js-r148/build/three.min.js"></script> -->
+          <script src="../../three.js-r124/three.min.js"></script>
+          <script src="../../three.js-r124/OBJExporter.js"></script>
+          <script src="../../three.js-r124/GLTFExporter.js"></script>
+
+          <script src="script/downloadJSON.js"></script>
+
+          <script src="script/controller.js"></script>
+          <script src="script/geometry.js"></script>
+          <script src="script/lindenmayer.js"></script>
+          <script src="script/lindenmayer2d.js"></script>
+          <script src="script/message.js"></script>
+          <script src="script/presets.js"></script>
+          <script src="script/presets2d.js"></script>
+          <script src="script/renderer.js"></script>
+
+          <div class="full-width"
+            ><div id="renderer"></div
+            ><div id="message-bar"><span id="message-text"></span></div
+            ><div id="controls"
+              ><div id="controls-left"
+                ><table
+                  ><tr
+                    ><td>Preset:</td
+                    ><td
+                      ><select
+                        id="l3d-preset"
+                        onchange="preset(); controller.go();"
+                        value=""
+                        ><option value="tree">Tree</option
+                        ><option value="hilbert-curve">Hilbert curve</option
+                        ><option value="plant">Plant</option
+                        ><option value="vines">Vines</option
+                        ><option value="fern">Fern</option
+                        ><option value="spring">Spring</option
+                        ><option value="spiral">Square spiral</option></select
+                      ></td
+                    ></tr
+                  ><tr
+                    ><td>Render style:</td
+                    ><td
+                      ><select
+                        id="l3d-render-style"
+                        onchange="controller.changeSystem(); controller.go();"
+                        value=""
+                        ><option value="lines">Lines</option
+                        ><option value="tubes">Tubes</option
+                        ><option value="plant">Plant</option
+                        ><option value="cubes">Cubes</option></select
+                      ></td
+                    ></tr
+                  ><tr
+                    ><td>Axiom:</td
+                    ><td><input id="l3d-axiom" type="text" /></td></tr
+                  ><tr
+                    ><td>Angle:</td
+                    ><td
+                      ><input
+                        id="l3d-angle"
+                        type="text"
+                        onchange="controller.changeSystem()" /></td></tr
+                  ><tr
+                    ><td>Constants:</td
+                    ><td
+                      ><input
+                        id="l3d-constants"
+                        type="text"
+                        onchange="controller.changeSystem()" /></td></tr
+                  ><tr
+                    ><td>Rule 1:</td
+                    ><td
+                      ><input
+                        id="l3d-rule1"
+                        type="text"
+                        onchange="controller.changeSystem()" /></td></tr
+                  ><tr
+                    ><td>Rule 2:</td
+                    ><td
+                      ><input
+                        id="l3d-rule2"
+                        type="text"
+                        onchange="controller.changeSystem()" /></td></tr
+                  ><tr
+                    ><td>Rule 3:</td
+                    ><td
+                      ><input
+                        id="l3d-rule3"
+                        type="text"
+                        onchange="controller.changeSystem()" /></td></tr
+                  ><tr
+                    ><td>Rule 4:</td
+                    ><td
+                      ><input
+                        id="l3d-rule4"
+                        type="text"
+                        onchange="controller.changeSystem()" /></td></tr
+                  ><tr
+                    ><td>Rule 5:</td
+                    ><td
+                      ><input
+                        id="l3d-rule5"
+                        type="text"
+                        onchange="controller.changeSystem()" /></td></tr
+                  ><tr
+                    ><td>Rule 6:</td
+                    ><td
+                      ><input
+                        id="l3d-rule6"
+                        type="text"
+                        onchange="controller.changeSystem()" /></td></tr
+                  ><tr id="add-rule-button"
+                    ><td></td
+                    ><td
+                      ><button onclick="controller.addRuleField()"
+                        >Add rule</button
+                      ></td
+                    ></tr
+                  ></table
+                ></div
+              ><div id="controls-right"
+                ><table
+                  ><tr
+                    ><table
+                      ><tr
+                        ><td>Iterations:</td
+                        ><td
+                          ><input
+                            id="l3d-iterations"
+                            type="text"
+                            onchange="controller.changeSystem()" /></td
+                        ><td><button onclick="controller.go()">Go</button></td
+                        ><td
+                          ><button onclick="controller.export()"
+                            >Export</button
+                          ></td
+                        ></tr
+                      ></table
+                    ></tr
+                  ><tr
+                    ><td
+                      ><table
+                        ><tr
+                          ><td
+                            ><button onclick="controller.step()"
+                              >Step</button
+                            ></td
+                          ><td
+                            ><button onclick="controller.clearResult()"
+                              >Clear</button
+                            ></td
+                          ></tr
+                        ><tr
+                          ><td
+                            ><button onclick="controller.zoomIn()"
+                              >Zoom in</button
+                            ></td
+                          ><td
+                            ><button onclick="controller.zoomOut()"
+                              >Zoom out</button
+                            ></td
+                          ></tr
+                        ></table
+                      ></td
+                    ><td>
+                      <textarea
+                        id="l3d-result"
+                        rows="14"
+                        readonly
+                      ></textarea></td></tr></table></div></div
+          ></div>
+
+          <script src="script/setup.js"></script>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

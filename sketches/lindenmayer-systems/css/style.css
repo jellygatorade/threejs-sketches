@@ -1,0 +1,478 @@
+:root {
+  --color-white: #ffffff;
+  --color-gray: #444444;
+  --color-elements: #50314c;
+  --color-background: #e0e0e0;
+  --color-hover: #9c7e50;
+  --color-light: #7a7a7a;
+  --color-code: #f0f0f0;
+  --max-width: 960px;
+  --bold-weight: 900;
+  --button-padding-x: 16px;
+  --button-padding-y: 4px;
+  --sketch-min-width: 256px;
+  --sketch-max-width: 512px;
+  --transition-in: 0.3s;
+  --transition-out: 0.2s;
+  --figure-padding: 16px;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-background);
+  color: var(--color-gray);
+  font-family: "Raleway", sans-serif;
+}
+
+h1 {
+  font-size: 36px;
+}
+
+#menu-wrapper {
+  max-width: var(--max-width);
+  margin: 0 auto 0 auto;
+  padding: 0 1px 0 1px;
+}
+
+#menu-buttons {
+  z-index: 3;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  position: fixed;
+  top: 0;
+  width: var(--max-width);
+  background-color: var(--color-elements);
+}
+
+.menu-button {
+  float: left;
+  background-color: var(--color-elements);
+  border: none;
+  outline: none;
+  font-size: 20px;
+  color: var(--color-white);
+  text-align: center;
+  padding: 8px 12px 8px 12px;
+}
+
+.menu-button:hover {
+  background-color: var(--color-hover);
+}
+
+.menu-button-current {
+  background-color: var(--color-white);
+  color: inherit;
+  pointer-events: none;
+}
+
+#wrapper {
+  z-index: 1;
+  max-width: var(--max-width);
+  margin: 32px auto 32px auto;
+  padding-top: 32px;
+  padding-bottom: 32px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-elements);
+  /* border-top: none; */
+  /* border-radius: 0 0 16px 16px; */
+}
+
+#header {
+  text-align: center;
+  margin: 32px 0 48px 0;
+}
+
+#header h1 {
+  font-weight: lighter;
+  margin: 0;
+  padding-bottom: 6px;
+}
+
+#header h2 {
+  border-top: 1px solid var(--color-gray);
+  margin: 0 auto 0 auto;
+  width: 40%;
+  font-size: 16px;
+  padding-top: 6px;
+}
+
+#content {
+  padding-left: 7%;
+  padding-right: 7%;
+}
+
+#content h1 {
+  font-weight: lighter;
+  border-top: 2px solid var(--color-gray);
+  padding-top: 16px;
+  margin: 0 auto 0 auto;
+}
+
+#content h1 a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#content h2 {
+  font-size: 18px;
+  padding-top: 16px;
+}
+
+#content p {
+  text-align: justify;
+}
+
+#content p a,
+#content li a {
+  color: var(--color-elements);
+  font-weight: var(--bold-weight);
+  text-decoration: inherit;
+}
+
+#content a:hover {
+  color: var(--color-hover);
+}
+
+#content .prettyprint {
+  width: 100% !important;
+  max-height: 400px !important;
+  overflow: auto !important;
+  background-color: var(--color-code) !important;
+  border: none !important;
+  padding: 1px 4px 1px 4px !important;
+}
+
+#content .prettyprint.noscroll {
+  max-height: none !important;
+}
+
+#content figure table tr td {
+  background-color: var(--color-code);
+  padding: 5px;
+}
+
+#content code {
+  background-color: var(--color-code);
+  padding: 0 4px 0 4px;
+}
+
+#content figure {
+  float: right;
+  padding: var(--figure-padding);
+  margin: auto 0 auto 0;
+  clear: right;
+  max-width: 100%;
+  display: table;
+}
+
+#content figure img {
+  border: 1px solid var(--color-gray);
+  max-width: 100%;
+}
+
+#content figure figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  font-style: italic;
+  margin-bottom: 8px;
+  max-width: 100%;
+  text-align: center;
+  padding-left: var(--figure-padding);
+  padding-right: var(--figure-padding);
+}
+
+#content ul {
+  list-style-type: dot;
+}
+
+#content ul li {
+  padding: 4px 0 4px 0;
+}
+
+#content ol li {
+  padding: 4px 0 4px 0;
+}
+
+.list-skip {
+  list-style-type: none;
+}
+
+.full-width {
+  width: 100%;
+  max-width: 100%;
+  clear: both;
+  display: inline-block;
+}
+
+.full-width canvas {
+  border: 1px solid var(--color-gray);
+  background-color: var(--color-background);
+  background-size: cover;
+  max-width: 100%;
+}
+
+.round-button {
+  padding: var(--button-padding-y) var(--button-padding-x)
+    var(--button-padding-y) var(--button-padding-x);
+  color: var(--color-white);
+  border-radius: 16px;
+  background-color: var(--color-elements);
+  border: 0;
+  font: inherit;
+  user-select: none;
+  text-align: center;
+}
+
+.round-button:hover {
+  cursor: pointer;
+  background-color: var(--color-hover);
+}
+
+.post-link {
+  overflow: auto;
+  clear: right;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  border-top: 2px solid var(--color-gray);
+}
+
+.post-link .text {
+  flex-basis: 60%;
+  flex-grow: 1;
+}
+
+.post-link .text h1 {
+  border-top: none !important;
+}
+
+.post-link-preview {
+  max-width: 100%;
+  padding: 8px;
+}
+
+.post-link-preview img {
+  max-width: 100%;
+}
+
+.date {
+  margin-left: 16px;
+  font-size: 12px;
+  color: var(--color-light);
+}
+
+#references {
+  width: 100%;
+  display: inline-block;
+}
+
+.post-reference {
+  display: block;
+  color: var(--color-elements);
+  font-weight: var(--bold-weight);
+  margin-bottom: 12px;
+}
+
+.post-reference:hover {
+  color: var(--color-hover);
+}
+
+.post-reference-left::before {
+  content: "<";
+  margin-right: 5px;
+}
+
+.post-reference-left {
+  float: left;
+}
+
+.post-reference-right::after {
+  content: ">";
+  margin-left: 5px;
+}
+
+.post-reference-right {
+  text-align: right;
+  float: right;
+}
+
+#donate {
+  display: flex;
+  justify-content: center;
+}
+
+#footer {
+  clear: both;
+  font-size: 11px;
+  text-align: right;
+  color: var(--color-light);
+  padding: 8px 16px 20px 16px;
+}
+
+#icons {
+  margin: 0 auto 0 auto;
+  height: 0;
+  width: 240px;
+  text-align: center;
+}
+
+.icon {
+  display: inline-block;
+  cursor: pointer;
+  position: relative;
+  top: -16px;
+  background-size: 64px 32px;
+  width: 32px;
+  height: 32px;
+  margin: 0 1px 0 1px;
+}
+
+.icon:hover {
+  background-position: 32px 0;
+}
+
+#icon-mail {
+  background-image: url("../img/ico_mail.svg");
+}
+
+#icon-orcid {
+  background-image: url("../img/ico_orcid.svg");
+}
+
+#icon-github {
+  background-image: url("../img/ico_github.svg");
+}
+
+#icon-mastodon {
+  background-image: url("../img/ico_mastodon.svg");
+}
+
+#icon-linkedin {
+  background-image: url("../img/ico_linkedin.svg");
+}
+
+#icon-twitter {
+  background-image: url("../img/ico_twitter.svg");
+}
+
+#icon-rss {
+  background-image: url("../img/ico_rss.svg");
+}
+
+#load-more {
+  margin: 8px auto 8px auto;
+  text-align: center;
+}
+
+#load-more .round-button {
+  display: inline-block;
+}
+
+#contact-form {
+  padding-top: 8px;
+  margin: 0 auto 0 auto;
+  text-align: center;
+}
+
+#contact-form input {
+  display: block;
+  margin: 8px 0 8px 0;
+  width: 100%;
+}
+
+#contact-form textarea {
+  font: inherit;
+  display: block;
+  margin: 8px 0 8px 0;
+  width: 100%;
+  height: 240px;
+  resize: none;
+}
+
+.game .summary h2 {
+  margin-top: 0;
+}
+
+.game .summary {
+  width: 100%;
+  float: left;
+}
+
+.game .summary img {
+  float: right;
+  padding-left: var(--figure-padding);
+  padding-bottom: var(--figure-padding);
+  max-width: 100%;
+}
+
+#sketches {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.sketch {
+  display: flex;
+  flex-direction: column;
+  flex-basis: var(--sketch-min-width);
+  flex-grow: 1;
+  max-width: var(--sketch-max-width);
+  padding: 4px;
+}
+
+.sketch .preview {
+  background-color: black;
+}
+
+.sketch .preview .summary {
+  color: var(--color-white);
+  position: relative;
+  pointer-events: none;
+  width: 100%;
+  height: 0;
+  overflow: visible;
+  z-index: 2;
+  opacity: 0;
+}
+
+.sketch .preview:hover .summary {
+  opacity: 1;
+  transition: var(--transition-in);
+}
+
+.sketch .preview .summary h2,
+.sketch .preview .summary p {
+  padding: 12px !important;
+  margin: 0;
+}
+
+.sketch .preview a {
+  position: relative;
+  z-index: 1;
+}
+
+.sketch .preview a img {
+  display: flex;
+  width: 100%;
+  transition: var(--transition-out);
+}
+
+.sketch .preview:hover a img {
+  opacity: 0.5;
+  transition: var(--transition-in);
+}
+
+.sketch .links {
+  display: flex;
+}
+
+.sketch .links a {
+  display: block;
+  flex-grow: 1;
+  text-decoration: none;
+}
+
+.sketch .links .round-button {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
