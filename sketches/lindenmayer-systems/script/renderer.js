@@ -144,13 +144,12 @@ Renderer.prototype = {
   },
 
   exportScene() {
-    console.log(this.scene);
-    console.log(this.threeScene);
-
     // OBJ
     // const exporter = new THREE.OBJExporter();
     // const data = exporter.parse(this.threeScene);
     // downloadFile(data);
+
+    //console.log(this.threeScene);
 
     // GLTF
     const exporter = new THREE.GLTFExporter();
@@ -158,10 +157,9 @@ Renderer.prototype = {
     const options = null;
 
     exporter.parse(
-      this.threeScene, // what to download?
+      this.threeScene, // scene or object to parse for download
       function (gltf) {
-        console.log(gltf);
-        downloadJSON(gltf, "scene.gltf");
+        downloadJSON(gltf, "scene.gltf"); // json object, filename
       },
       options
     );
