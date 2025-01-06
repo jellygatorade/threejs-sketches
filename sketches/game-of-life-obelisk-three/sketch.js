@@ -48,15 +48,11 @@ document.body.appendChild(renderer.domElement);
 
 const textureLoader = new THREE.TextureLoader();
 
-const textureEquirecDay = textureLoader.load(
-  "../../assets/envmaps/evening_meadow_2k.jpg"
-);
+const textureEquirecDay = textureLoader.load("../../assets/envmaps/evening_meadow_2k.jpg");
 textureEquirecDay.mapping = THREE.EquirectangularReflectionMapping;
 textureEquirecDay.encoding = THREE.sRGBEncoding;
 
-const textureEquirecNight = textureLoader.load(
-  "../../assets/envmaps/dikhololo_night_2k.jpg"
-);
+const textureEquirecNight = textureLoader.load("../../assets/envmaps/dikhololo_night_2k.jpg");
 textureEquirecNight.mapping = THREE.EquirectangularReflectionMapping;
 textureEquirecNight.encoding = THREE.sRGBEncoding;
 
@@ -69,6 +65,17 @@ const materialsBasic = [
   }),
   new THREE.MeshBasicMaterial({
     color: 0xf0f0f0,
+    side: THREE.DoubleSide,
+  }),
+];
+
+const materialsBasicRaleighProposal = [
+  new THREE.MeshBasicMaterial({
+    color: 0x645640,
+    side: THREE.DoubleSide,
+  }),
+  new THREE.MeshBasicMaterial({
+    color: 0xf2ebe3,
     side: THREE.DoubleSide,
   }),
 ];
@@ -103,7 +110,9 @@ const transparentMaterial = new THREE.MeshBasicMaterial({
 
 // Edges colors
 const basicLineColor = new THREE.Color(0x034000);
+const basicLineColorRaleighProposal = new THREE.Color(0x241610);
 const envLineColor = new THREE.Color(0x2f3020);
+const envLineColorRaleighProposal = new THREE.Color(0xffffff);
 
 const wireframeMaterial = new THREE.LineBasicMaterial({
   color: envLineColor,
@@ -139,6 +148,13 @@ const switchEnvironments = (value) => {
       materials = materialsReflective;
       switchMaterialEnvMaps(textureEquirecNight);
       wireframeMaterial.color = envLineColor;
+      break;
+    case "Raleigh Proposal":
+      scene.background = envLineColorRaleighProposal;
+      scene.backgroundIntensity = 1.0;
+      materials = materialsBasicRaleighProposal;
+      wireframeMaterial.color = basicLineColorRaleighProposal;
+      glowGUI.setValue(false);
       break;
     case "None":
       scene.background = envLineColor;
@@ -204,13 +220,7 @@ for (let i = 0; i < golUniversesCount; i++) {
   //    thetaStart : Float, thetaLength : Float)
   //   }
 
-  const geometry = new THREE.CylinderGeometry(
-    radius * scaleBy,
-    radius,
-    1,
-    intialGOL.length,
-    1
-  );
+  const geometry = new THREE.CylinderGeometry(radius * scaleBy, radius, 1, intialGOL.length, 1);
 
   const defaultGroups = geometry.groups; // store the default groups that come with CylinderGeometry
   geometry.clearGroups(); // clear the default groups
@@ -298,11 +308,7 @@ const speeds = {
   threeClockMax: 0,
 };
 
-const initialSpeed = mapRange(
-  speed,
-  [speeds.threeClockMin, speeds.threeClockMax],
-  [speeds.controlsMin, speeds.controlsMax]
-);
+const initialSpeed = mapRange(speed, [speeds.threeClockMin, speeds.threeClockMax], [speeds.controlsMin, speeds.controlsMax]);
 
 // gui
 
@@ -317,63 +323,29 @@ const parameters = {
   glow: glow,
 };
 
-const instruction1GUI = gui
-  .add(parameters, "instruction")
-  .name("- Click + drag + scroll to reposition view.");
+const instruction1GUI = gui.add(parameters, "instruction").name("- Click + drag + scroll to reposition view.");
 // dat.gui styles editing for writing the instruction
-document.getElementById(
-  "lil-gui-name-1"
-).parentElement.childNodes[0].style.width = "100%";
-document.getElementById(
-  "lil-gui-name-1"
-).parentElement.childNodes[0].style.whiteSpace = "normal";
+document.getElementById("lil-gui-name-1").parentElement.childNodes[0].style.width = "100%";
+document.getElementById("lil-gui-name-1").parentElement.childNodes[0].style.whiteSpace = "normal";
 document.getElementById("lil-gui-name-1").parentElement.childNodes[1].remove();
 
-const instruction2GUI = gui
-  .add(parameters, "instruction")
-  .name(
-    "- Numeric keys 1 - 4 to quickly switch between cellular automata rules."
-  );
+const instruction2GUI = gui.add(parameters, "instruction").name("- Numeric keys 1 - 4 to quickly switch between cellular automata rules.");
 // dat.gui styles editing for writing the instruction
-document.getElementById(
-  "lil-gui-name-2"
-).parentElement.childNodes[0].style.width = "100%";
-document.getElementById(
-  "lil-gui-name-2"
-).parentElement.childNodes[0].style.whiteSpace = "normal";
+document.getElementById("lil-gui-name-2").parentElement.childNodes[0].style.width = "100%";
+document.getElementById("lil-gui-name-2").parentElement.childNodes[0].style.whiteSpace = "normal";
 document.getElementById("lil-gui-name-2").parentElement.childNodes[1].remove();
 
-const instruction3GUI = gui
-  .add(parameters, "instruction")
-  .name(
-    "- For example switching between Rule 90 and Rule 184 yields nice variations."
-  );
+const instruction3GUI = gui.add(parameters, "instruction").name("- For example switching between Rule 90 and Rule 184 yields nice variations.");
 // dat.gui styles editing for writing the instruction
-document.getElementById(
-  "lil-gui-name-3"
-).parentElement.childNodes[0].style.width = "100%";
-document.getElementById(
-  "lil-gui-name-3"
-).parentElement.childNodes[0].style.whiteSpace = "normal";
-document.getElementById(
-  "lil-gui-name-3"
-).parentElement.childNodes[0].style.marginBottom = "0.5rem";
+document.getElementById("lil-gui-name-3").parentElement.childNodes[0].style.width = "100%";
+document.getElementById("lil-gui-name-3").parentElement.childNodes[0].style.whiteSpace = "normal";
+document.getElementById("lil-gui-name-3").parentElement.childNodes[0].style.marginBottom = "0.5rem";
 document.getElementById("lil-gui-name-3").parentElement.childNodes[1].remove();
 
-const speedGUI = gui
-  .add(parameters, "speed")
-  .min(0.0)
-  .max(1.0)
-  .step(0.01)
-  .name("Speed")
-  .listen();
+const speedGUI = gui.add(parameters, "speed").min(0.0).max(1.0).step(0.01).name("Speed").listen();
 
 speedGUI.onChange(function (value) {
-  const newSpeed = mapRange(
-    value,
-    [speeds.controlsMin, speeds.controlsMax],
-    [speeds.threeClockMin, speeds.threeClockMax]
-  );
+  const newSpeed = mapRange(value, [speeds.controlsMin, speeds.controlsMax], [speeds.threeClockMin, speeds.threeClockMax]);
 
   //console.log(newSpeed);
 
@@ -384,17 +356,13 @@ speedGUI.onChange(function (value) {
   }
 });
 
-const ruleGUI = gui
-  .add(parameters, "rule", ["Rule 30", "Rule 90", "Rule 110", "Rule 184"])
-  .name("Rule");
+const ruleGUI = gui.add(parameters, "rule", ["Rule 30", "Rule 90", "Rule 110", "Rule 184"]).name("Rule");
 
 ruleGUI.onChange(function (value) {
   rule = value;
 });
 
-const envmapGUI = gui
-  .add(parameters, "environmentMap", ["Day", "Dusk", "None"])
-  .name("Enviroment");
+const envmapGUI = gui.add(parameters, "environmentMap", ["Day", "Dusk", "Raleigh Proposal", "None"]).name("Enviroment");
 
 envmapGUI.onChange(function (value) {
   switchEnvironments(value);
@@ -446,11 +414,7 @@ const delta = 0.01; // required for EffectComposer ?
 const renderScene = new RenderPass(scene, camera);
 composer.addPass(renderScene);
 
-const outlinePass = new OutlinePass(
-  new THREE.Vector2(window.innerWidth, window.innerHeight),
-  scene,
-  camera
-);
+const outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
 
 // Assessment color values
 // #60634f
